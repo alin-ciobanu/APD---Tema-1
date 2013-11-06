@@ -23,6 +23,22 @@ int min (int a, int b) {
 
 }
 
+int maxC (int v[], int n) {
+
+	int max = v[0];
+	int pos = 0;
+	int i;
+	for (i = 1; i < n; i++) {
+		if (v[i] > max) {
+			max = v[i];
+			pos = i;
+		}
+	}
+	
+	return pos;
+
+}
+
 int main (int argc, char** argv) {
 
 	int s; // numarul de saptamani
@@ -34,7 +50,7 @@ int main (int argc, char** argv) {
 	int nc; // numarul de culori
 	int config[N][N];
 	int config_aux[N][N];
-	int dmin[N][N][NC]; // distantele minime pentru fiecare culoare
+	int dmin[NC]; // distantele minime pentru fiecare culoare
 	int nr_culori[NC]; // numarul de senatori care apartin fiecarei culori
 
 	int i, j, k, l, m, p;
@@ -45,9 +61,6 @@ int main (int argc, char** argv) {
 	for (i = 0; i < n; i++) {
 		for (j = 0; j < n; j++) {
 			fscanf(in, "%d ", &config[i][j]);
-			for (k = 0; k < nc; k++) {
-				dmin[i][j][k] = INT_MAX;
-			}
 		}
 	}
 	
@@ -61,32 +74,23 @@ int main (int argc, char** argv) {
 			for (j = 0; j < n; j++) {
 		
 				for (k = 0; k < nc; k++) {
-
-						int count = 0;
-						for (m = 0; m < n; m++) {
-							for (p = 0; p < n; p++) {
-								if (config[m][p] == k && !(i == m && j == p)) {
-									dmin[i][j][k] = min (dmin[i][j][k], max(abs(i - m), abs(j - p)));
-									count++;
-								}
-							}
-						}
-						if (count == 0) {
-							dmin[i][j][k] = 0; 
-							// nu s-a intrat niciodata in if-ul de sus
-							// senatorul de culoare k este singurul de culoare k sau
-							// nu mai exista senatori de culoare k
-						}
-						
-						if (k > 0) {
-							if (dmin[i][j][k] > dmin[i][j][k - 1]) {
-								config_aux[i][j] = k;
-							}
-						}
-						else { // pentru k = 0
-							config_aux[i][j] = 0;
-						}
+					dmin[k] = INT_MAX;
 				}
+
+				for (m = 0; m < n; m++) {
+					for (p = 0; p < n; p++) {
+						if (!(i == m && j == p)) {
+							dmin[config[m][p]] = min (dmin[config[m][p]], max(abs(i - m), abs(j - p)));
+						}
+					}
+				}
+				
+				for (k = 0; k < nc; k++) {
+					if (dmin[k] == INT_MAX) {
+						dmin[k] = 0;
+					}
+				}				
+				config_aux[i][j] = maxC (dmin, nc);
 
 			}
 		}
