@@ -7,22 +7,6 @@
 #define N 100
 #define NC 50
 
-int max (int a, int b) {
-
-	if (a >= b)
-		return a;
-	return b;
-
-}
-
-int min (int a, int b) {
-
-	if (a <= b)
-		return a;
-	return b;
-
-}
-
 int maxC (int v[], int n) {
 
 	int max = v[0];
@@ -90,7 +74,7 @@ int main (int argc, char** argv) {
 	}
 	
 	for (l = 1; l <= s; l++) {
-		
+
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++) {
 
@@ -260,6 +244,7 @@ int main (int argc, char** argv) {
 					}
 				}				
 				config_aux[i][j] = maxC (dmin, nc);
+				nr_culori[config[i][j]] += 1; 
 
 			}
 		}
@@ -267,7 +252,6 @@ int main (int argc, char** argv) {
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++) {
 				config[i][j] = config_aux[i][j];
-				nr_culori[config[i][j]] += 1; 
 			}
 		}
 		
