@@ -52,6 +52,9 @@ int main (int argc, char** argv) {
 	
 	int iS, iF, jS, jF; // variabile de parcurgere
 	int cul_iter[NC]; // culori iterate
+	int partide_moarte[NC];
+	int last_element[NC]; // culorile care mai au un singur senator
+
 	int pas;
 	int stgJosL, stgJosC;
 	int stgSusL, stgSusC;
@@ -66,13 +69,26 @@ int main (int argc, char** argv) {
 	for (i = 0; i < n; i++) {
 		for (j = 0; j < n; j++) {
 			fscanf(in, "%d ", &config[i][j]);
+			nr_culori[config[i][j]] += 1;
 		}
 	}
 	
 	for (k = 0; k < nc; k++) {
+		if (nr_culori[k] == 0) {
+			partide_moarte[k] = 1;
+			last_element[k] = 0;
+		}
+		else if (nr_culori[k] == 1) {
+			partide_moarte[k] = 0;
+			last_element[k] = 1;
+		}
+		else {
+			partide_moarte[k] = 0;
+			last_element[k] = 0;
+		}
 		nr_culori[k] = 0;
 	}
-	
+
 	for (l = 1; l <= s; l++) {
 
 		for (i = 0; i < n; i++) {
@@ -92,43 +108,13 @@ int main (int argc, char** argv) {
 	
 				for (k = 0; k < nc; k++) {
 					dmin[k] = INT_MAX;
-					cul_iter[k] = 0;
+					cul_iter[k] = partide_moarte[k];
+					if (last_element[k] == 1 && config[i][j] == k) {
+						cul_iter[k] = 1;
+					}
 				}
 
-				while (!allIterated(cul_iter, nc) && 
-					!( stgSusL < 0 && stgSusC < 0 && 
-					stgJosL >= n && stgJosC < 0 && 
-					drSusL < 0 && drSusC >= n && 
-					drJosL >= n && drJosC >= n )
-				) {
-
-					/*
-					for (k = stgSusC; k <= drSusC; k++) {
-						if (k >= 0 && k < n) {
-							if (stgSusL >= 0 && stgSusL < n && cul_iter[config[stgSusL][k]] == 0) {
-								dmin[config[stgSusL][k]] = pas;
-								cul_iter[config[stgSusL][k]] = 1;
-							}
-							if (stgJosL >= 0 && stgJosL < n && cul_iter[config[stgJosL][k]] == 0) {
-								dmin[config[stgJosL][k]] = pas;
-								cul_iter[config[stgJosL][k]] = 1;
-							}
-						}
-					}
-					
-					for (k = stgSusL; k <= stgJosL; k++) {
-						if (k >= 0 && k < n) {
-							if (stgSusC >= 0 && stgSusC < n && cul_iter[config[k][stgSusC]] == 0) {
-								dmin[config[k][stgSusC]] = pas;
-								cul_iter[config[k][stgSusC]] = 1;
-							}
-							if (drSusC >= 0 && drSusC < n && cul_iter[config[k][drSusC]] == 0) {
-								dmin[config[k][drSusC]] = pas;
-								cul_iter[config[k][drSusC]] = 1;
-							}
-						}
-					}
-					*/
+				while (!allIterated(cul_iter, nc)) {
 
 					if (stgSusL >= 0) { // pentru linia de sus
 				
@@ -210,7 +196,7 @@ int main (int argc, char** argv) {
 						else {
 							iS = drSusL;
 						}
-						
+
 						if (drJosL >= n) {
 							iF = n;
 						}
@@ -244,22 +230,46 @@ int main (int argc, char** argv) {
 					}
 				}				
 				config_aux[i][j] = maxC (dmin, nc);
-				nr_culori[config[i][j]] += 1; 
 
 			}
 		}
-		
+
 		for (i = 0; i < n; i++) {
 			for (j = 0; j < n; j++) {
 				config[i][j] = config_aux[i][j];
+				nr_culori[config[i][j]] += 1;
 			}
 		}
 		
 		for (k = 0; k < nc - 1; k++) {
 			fprintf(out, "%d ", nr_culori[k]);
+			if (nr_culori[k] == 0) {
+				partide_moarte[k] = 1;
+				last_element[k] = 0;
+			}
+			else if (nr_culori[k] == 1) {
+				last_element[k] = 1;
+				partide_moarte[k] = 0;
+			}
+			else {
+				partide_moarte[k] = 0;
+				last_element[k] = 0;
+			}
 			nr_culori[k] = 0;
 		}
 		fprintf(out, "%d\n", nr_culori[nc - 1]);
+		if (nr_culori[nc - 1] == 0) {
+			partide_moarte[nc - 1] = 1;
+			last_element[nc - 1] = 0;
+		}
+		else if (nr_culori[nc - 1] == 1) {
+			last_element[nc - 1] = 1;
+			partide_moarte[nc - 1] = 0;
+		}
+		else {
+			partide_moarte[nc - 1] = 0;
+			last_element[nc - 1] = 0;
+		}
 		nr_culori[nc - 1] = 0;
 
 	}
