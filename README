@@ -1,0 +1,39 @@
+Algoritmi Paraleli si Distribuiti---Tema-1
+============
+
+Student: Ciobanu Alin Emanuel
+Grupa: 332 CC
+
+Sistemul pe care am testat tema: i3 la 2.1 GHz. Am testat cu maxim 4 thread-uri.
+Sistemul de operare pe care l-am folosit este Linux Mint 15. Compilatorul folosit este gcc, versiunea 4.7.3.
+
+Observatii: Fisierul de output al programului meu contine whitespace-uri. Va rog sa testati cu diff -w.
+
+
+Detalii de implementare
+============
+Algoritmul serial neoptimizat parcurge fiecare element din matrice, iar pentru fiecare element, mai parcurg toata matricea 
+inca o data pentru a determina distanta minima fata de fiecare culoare politica. Apoi aleg maximul dintre minimuri, iar aceasta este noua 
+culoare politica a senatorului.
+
+Pentru algoritmul optimizat, am cautat distanta minima de la un senator pana la fiecare culoare in zone concentrice, asa cum specifica enuntul.
+La fiecare pas, se gasesc un numar de culori. Atunci cand au fost gasite toate culorile, bucla se poate opri pentru ca suntem siguri ca toate 
+distantele gasite sunt minime. Pentru a sti cand am gasit toate culorile, am folosit 3 vectori de dimensiune k, unde k = numarul de culori: 
+un vector care verifica daca toate culorile au fost parcurse (atunci cand vectorul este plin de 1, toate culorile au fost parcurse),
+un vector care tine minte partidele moarte (atunci cand un partid nu mai exista, se trece 1 pe pozitia aferenta in vector),
+un vector care tine minte daca un partid mai are un singur senator. Daca un partid este mort, nu mai este cautat in matrice (este setat pe 1 in 
+vectorul de verificare). Daca un partid mai are un singur element, acel element nu se mai cauta pe sine.
+Pentru parcurgerea cercurilor concentrice (mai bine zis patrate), am gasit colturile lor si am facut 4 for-uri pe distanta dintre fiecare 2 colturi.
+
+Am paralelizat varianta optimizata.  Am paralelizat for-ul care ia liniile matricei (la cautare si la numarare). Pentru zona paralelizata, variabila 
+(vectorul) pentru distantele minime a fost setat ca private (pentru ca sunt mai multe distante minime pentru fiecare element din matrice).
+
+Teste si timpi
+============
+Varianta seriala neoptimizata dureaza aproape 3 minute (2 minute si 50 de secunde).
+Varianta seriala optimizata dureaza 19 secunde.
+Varinata paralela dureaza:
+* 19 secunde pentru 1 thread
+* 11 secunde pentru 2 thread-uri
+* 10 secunde pentru 4 thread-uri
+Testele au fost facute pentru 100 de saptamani cu matrice de dimensiune 100x100. Chunk-ul este de 20 (setat in program) cu scheduling dinamic. 
